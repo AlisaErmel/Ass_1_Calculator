@@ -1,19 +1,47 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, FlatList } from 'react-native';
 
 export default function App() {
   const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
   const [result, setResult] = useState(null);
 
+  const [data, setData] = useState([]);
+
   const handlePressPlus = () => {
-    setResult(Number(first) + Number(second));
-  }
+    const res = Number(first) + Number(second);
+    setResult(res);
+
+    const newItem = {
+      id: Date.now().toString(),
+      first,
+      second,
+      result: res,
+      op: '+'
+    };
+
+    setData([...data, newItem]);
+    setFirst("");
+    setSecond("");
+  };
 
   const handlePressMinus = () => {
-    setResult(Number(first) - Number(second));
-  }
+    const res = Number(first) - Number(second);
+    setResult(res);
+
+    const newItem = {
+      id: Date.now().toString(),
+      first,
+      second,
+      result: res,
+      op: '-'
+    };
+
+    setData([...data, newItem]);
+    setFirst("");
+    setSecond("");
+  };
 
   return (
     <View style={styles.container}>
@@ -39,6 +67,18 @@ export default function App() {
         <Button title="+" onPress={handlePressPlus} />
         <Button title="-" onPress={handlePressMinus} />
       </View>
+      <FlatList
+        data={data}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) =>
+          <View>
+            <Text style={styles.flatListItem}>{item.first} {item.op} {item.second} = {item.result}</Text>
+          </View>
+        }
+        ListHeaderComponent={
+          <Text style={styles.flatListHeading}>History:</Text>
+        }
+      />
     </View>
   );
 }
@@ -67,5 +107,21 @@ const styles = StyleSheet.create({
   buttonStyle: {
     flexDirection: 'row',
     color: 'blue'
+  },
+
+  flatListHeading: {
+    fontSize: 20,
+    marginTop: 10,
+    marginBottom: 10
+  },
+
+  flatListItem: {
+    fontSize: 15,
+    backgroundColor: 'lightpink',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+    padding: 5,
+    margin: 5
   }
 });
